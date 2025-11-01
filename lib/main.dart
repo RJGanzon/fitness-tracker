@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:fl_chart/fl_chart.dart';
+
 void main() {
   runApp(const MyApp());
 }
+double minWeight = 68; // can be dynamic
+double maxWeight = 70; // can be dynamic
+int horizontalLines = 4; // number of lines you want including min and max
 
+double interval = (maxWeight - minWeight) / (horizontalLines - 1);
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -35,6 +41,7 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -128,8 +135,8 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             ,
             Container(
-              height: 200,
-              width: double.infinity,
+              height: 320,
+              width: 350,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(20),
                 gradient: LinearGradient(
@@ -139,27 +146,134 @@ class _MyHomePageState extends State<MyHomePage> {
                 )
               )
             ,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("Weight"),
-                        Text("Last 90 days")
-                      ]
-                    ),
-                    IconButton(
-                      icon: Text("+"),
-                      onPressed: (){
-                        print("Increment Weight");
-                      },
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Weight",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16
+                          )),
+                          Text("Last 90 days",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 10
+                          ))
+                        ]
+                      ),
+                      IconButton(
+                        icon: Text("+",
+                        style: GoogleFonts.poppins(
+                          fontSize: 25,
+                        )),
+                        onPressed: (){
+                          print("Increment Weight");
+                        },
+                      )
+                    ]
+                  ),
+                  Container(
+                    height:200,
+                    width:double.infinity,
+                    child: LineChart(
+                      LineChartData(
+                        minX: 0,
+                        maxX: 90,
+                        minY: minWeight,
+                        maxY: maxWeight,
+                        borderData: FlBorderData(show: false),
+                        gridData: FlGridData(
+                          drawVerticalLine: false,
+                          drawHorizontalLine: true,
+                          getDrawingHorizontalLine: (value) => FlLine(
+                            color: const Color(0x809CB0FD),
+                            strokeWidth: 2,
+                          ),
+                          checkToShowHorizontalLine: (value) {
+                            // Show line if it's min, max, or on the interval
+                            if ((value - minWeight) % interval == 0 || value == minWeight || value == maxWeight) {
+                              return true;
+                            }
+                            return false;
+                          },
+                        ),
+                        titlesData: FlTitlesData(
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: 30,
+                              getTitlesWidget: (value, meta) {
+                                switch (value.toInt()) {
+                                  case 0:
+                                    return const Text('1');
+                                  case 30:
+                                    return const Text('30');
+                                  case 60:
+                                    return const Text('60');
+                                  case 90:
+                                    return const Text('90');
+                                  default:
+                                    return const Text('');
+                                }
+                              },
+                            ),
+                          ),
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              interval: interval,
+                              reservedSize: 40,
+                              getTitlesWidget: (value, meta) => Text(value.toStringAsFixed(1)),
+                            ),
+                          ),
+                          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        ),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: const [
+                              FlSpot(0, 70),
+                              FlSpot(30, 69.5),
+                              FlSpot(60, 68.5),
+                              FlSpot(90, 68),
+                            ],
+                            isCurved: true,
+                            gradient: const LinearGradient(
+                              colors: [
+                                Color(0xFF9CB0FD),
+                                Color(0xFF5D82F8),
+                              ],
+                            ),
+                            barWidth: 3,
+                            isStrokeCapRound: true,
+                            dotData: FlDotData(show: true),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              gradient: LinearGradient(
+                                colors: [
+                                  Color(0x809CB0FD),
+                                  Color(0x805D82F8),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     )
-                  ]
-                )
-              ]
+
+                    ,
+                  )
+                ]
+              ),
             ))],
           ),
         )

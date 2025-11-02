@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         ),
                         Text(
-                          "Stefani Wong",
+                          "Ralph Ganzon",
                           style: GoogleFonts.poppins(
                             fontSize: 25,
                             color: Colors.black,
@@ -493,6 +493,46 @@ class _MyHomePageState extends State<MyHomePage> {
                                   borderRadius: BorderRadius.circular(20),
                                   color: Colors.white,
                                 ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Sleep",
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 12, fontWeight: FontWeight.w500)),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        "Last 7 days",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          foreground: Paint()
+                                            ..shader = const LinearGradient(
+                                              colors: [
+                                                Color(0xFFD4DBFF),
+                                                Color(0xFF8C9BFF),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ).createShader(Rect.fromLTWH(0, 0, 200, 70)),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Expanded(
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: double.infinity,
+                                            height: 100,
+                                            child: CustomPaint(
+                                              painter: _SleepGradientBarChartPainter(),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                )
                               ),
                             ),
                             const SizedBox(height: 16),
@@ -630,5 +670,37 @@ class _CircularProgressPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+class _SleepGradientBarChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final sleepData = [0.8, 0.6, 0.7, 0.5, 0.9, 0.6, 0.8]; // dummy data
+    final barWidth = size.width / (sleepData.length * 2 - 1);
+
+    for (int i = 0; i < sleepData.length; i++) {
+      final x = i * barWidth * 2;
+      final barHeight = sleepData[i] * size.height;
+
+      Rect rect = Rect.fromLTWH(x, size.height - barHeight, barWidth, barHeight);
+
+      Paint paint = Paint()
+        ..shader = const LinearGradient(
+          colors: [
+            Color(0xFFD4DBFF), // light gradient start
+            Color(0xFF8C9BFF), // deep gradient end
+          ],
+          begin: Alignment.bottomCenter,
+          end: Alignment.topCenter,
+        ).createShader(rect);
+
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+        paint,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 

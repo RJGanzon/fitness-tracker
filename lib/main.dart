@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:dotted_line/dotted_line.dart';
-
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +12,6 @@ double minWeight = 68; // can be dynamic
 double maxWeight = 70; // can be dynamic
 int horizontalLines = 4; // number of lines including min and max
 double interval = (maxWeight - minWeight) / (horizontalLines - 1);
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -40,6 +39,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool hasNotification = false;
+
   Widget waterLabel(String time, String amount) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,8 +59,9 @@ class _MyHomePageState extends State<MyHomePage> {
             foreground: Paint()
               ..shader = const LinearGradient(
                 colors: [
-                  Color(0xFFD4DBFF), // start (darker lavender)
-                  Color(0xFF8C9BFF), // end (darker bluish purple)
+                  Color(0xFFF0B7FF), // soft pink-lavender start
+                  Color(0xFFE6A4F4), // pinkish middle tone
+                  Color(0xFFD7A0FF), // pink-purple end
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -72,10 +73,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget intakeCircle(bool current, String time) {
-    return
-      Row(
-        children: [
-          Container(
+    return Row(
+      children: [
+        Container(
           width: 8,
           height: 8,
           decoration: BoxDecoration(
@@ -83,14 +83,14 @@ class _MyHomePageState extends State<MyHomePage> {
             gradient: LinearGradient(
               colors: current
                   ? [
-                Color(0xFFCC75FF), // deeper pink-lavender start
-                Color(0xFFB65DF2), // rich pinkish-purple middle
-                Color(0xFF9B50E9), // dark violet end
+                Color(0xFFCC75FF),
+                Color(0xFFB65DF2),
+                Color(0xFF9B50E9),
               ]
                   : [
-                Color(0xFFF0B7FF), // soft pink-lavender start
-                Color(0xFFE6A4F4), // pinkish middle tone
-                Color(0xFFD7A0FF), // pink-purple end
+                Color(0xFFF0B7FF),
+                Color(0xFFE6A4F4),
+                Color(0xFFD7A0FF),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -104,28 +104,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
             ],
           ),
-              ),
-        // SizedBox(width: 10,),
-        // Text(time,
-        // style: GoogleFonts.poppins(
-        //   color: Colors.grey,
-        //   fontSize: 10
-        // ))
-        ],
-      );
+        ),
+      ],
+    );
   }
 
   Widget dottedLineWater() {
     return DottedLine(
-      direction: Axis.vertical, // or Axis.vertical
-      lineLength: 20, // full width
+      direction: Axis.vertical,
+      lineLength: 20,
       lineThickness: 1.5,
       dashLength: 3.0,
       dashColor: Color(0xFFE4C6F7),
       dashGapLength: 4.0,
     );
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +190,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 20),
 
                 // 📊 Weight Chart
@@ -267,8 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               gridData: FlGridData(
                                 drawVerticalLine: false,
                                 drawHorizontalLine: true,
-                                getDrawingHorizontalLine: (value) =>
-                                const FlLine(
+                                getDrawingHorizontalLine: (value) => const FlLine(
                                   color: Color(0x809CB0FD),
                                   strokeWidth: 2,
                                 ),
@@ -311,12 +302,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                         Text(value.toStringAsFixed(1)),
                                   ),
                                 ),
-                                topTitles: AxisTitles(
-                                    sideTitles:
-                                    SideTitles(showTitles: false)),
-                                rightTitles: AxisTitles(
-                                    sideTitles:
-                                    SideTitles(showTitles: false)),
+                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                               ),
                               lineBarsData: [
                                 LineChartBarData(
@@ -354,7 +341,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 // 💧 Second Row (Water, Calories, Sleep)
@@ -378,38 +364,36 @@ class _MyHomePageState extends State<MyHomePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               RotatedBox(
-                                quarterTurns: -1, // Makes it vertical
+                                quarterTurns: -1,
                                 child: SizedBox(
-                                  width: double.infinity, // vertical height (since it's rotated)
-                                  height: 25, // thickness
+                                  width: double.infinity,
+                                  height: 25,
                                   child: Stack(
                                     children: [
-                                      // Background bar
                                       Container(
                                         decoration: BoxDecoration(
                                           color: Colors.grey[300],
                                           borderRadius: BorderRadius.circular(20),
                                         ),
                                       ),
-                                      // Foreground gradient bar (progress)
                                       FractionallySizedBox(
                                         alignment: Alignment.centerLeft,
-                                        widthFactor: 0.7, // progress value (70%)
+                                        widthFactor: 0.7,
                                         child: Container(
                                           decoration: BoxDecoration(
                                             gradient: const LinearGradient(
                                               colors: [
-                                                Color(0xFFBAAAF9), // start
+                                                Color(0xFFBAAAF9),
                                                 Color(0xFFB4BDFD),
-                                                Color(0xFFB3BFFD), // end
+                                                Color(0xFFB3BFFD),
                                               ],
                                             ),
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               bottomLeft: Radius.circular(20),
                                               bottomRight: Radius.circular(0),
                                               topLeft: Radius.circular(20),
-                                              topRight: Radius.circular(0)
-                                            )
+                                              topRight: Radius.circular(0),
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -417,92 +401,80 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                               ),
-                            SizedBox(width:10),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    "Water Intake",
+                              const SizedBox(width: 10),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Water Intake",
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14, fontWeight: FontWeight.w500)),
+                                  const SizedBox(height: 5),
+                                  Text(
+                                    "4 Liters",
                                     style: GoogleFonts.poppins(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w500
-                                    )
-                                ),
-                                SizedBox(height: 5,),
-                                Text(
-                                  "4 Liters",
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    foreground: Paint()
-                                      ..shader = const LinearGradient(
-                                        colors: [
-                                          Color(0xFFD4DBFF), // start (darker lavender)
-                                          Color(0xFF8C9BFF), // end (darker bluish purple)
-                                        ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ).createShader(Rect.fromLTWH(0, 0, 200, 70)),
-                                  ),
-                                ),
-                                SizedBox(height: 10),
-                                Text(
-                                    "Real Time updates",
-                                    style: GoogleFonts.poppins(
-                                      fontSize: 12,
-                                      color: Colors.black54
-                                    )
-                                ),
-                                SizedBox(height: 5),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Column(
-                                      children: [
-                                        intakeCircle(false, '6am - 8am'),
-                                        SizedBox(height: 5,),
-                                        dottedLineWater(),
-                                        SizedBox(height: 5,),
-                                        intakeCircle(false, '8am - 10am'),
-                                        SizedBox(height: 5,),
-                                        dottedLineWater(),
-                                        SizedBox(height: 5,),
-                                        intakeCircle(false, '10am - 12pm'),
-                                        SizedBox(height: 5,),
-                                        dottedLineWater(),
-                                        SizedBox(height: 5,),
-                                        intakeCircle(false, '12pm - 2pm'),
-                                        SizedBox(height: 5,),
-                                        dottedLineWater(),
-                                        SizedBox(height: 5,),
-                                        intakeCircle(true, '2pm - now'),
-                                      ],
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
+                                      foreground: Paint()
+                                        ..shader = const LinearGradient(
+                                          colors: [
+                                            Color(0xFFD4DBFF),
+                                            Color(0xFF8C9BFF),
+                                          ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
+                                        ).createShader(Rect.fromLTWH(0, 0, 200, 70)),
                                     ),
-                                    SizedBox(width: 10),
-                                    Column(
-                                      children:[
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Text("Real Time updates",
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 12, color: Colors.black54)),
+                                  const SizedBox(height: 5),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        children: [
+                                          intakeCircle(false, '6am - 8am'),
+                                          const SizedBox(height: 5),
+                                          dottedLineWater(),
+                                          const SizedBox(height: 5),
+                                          intakeCircle(false, '8am - 10am'),
+                                          const SizedBox(height: 5),
+                                          dottedLineWater(),
+                                          const SizedBox(height: 5),
+                                          intakeCircle(false, '10am - 12pm'),
+                                          const SizedBox(height: 5),
+                                          dottedLineWater(),
+                                          const SizedBox(height: 5),
+                                          intakeCircle(false, '12pm - 2pm'),
+                                          const SizedBox(height: 5),
+                                          dottedLineWater(),
+                                          const SizedBox(height: 5),
+                                          intakeCircle(true, '2pm - now'),
+                                        ],
+                                      ),
+                                      const SizedBox(width: 10),
                                       Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           waterLabel('6am-8am', '600ml'),
-                                          SizedBox(height:5),
+                                          const SizedBox(height: 5),
                                           waterLabel('9am-11am', '500ml'),
-                                          SizedBox(height:5),
+                                          const SizedBox(height: 5),
                                           waterLabel('11am-2pm', '1000ml'),
-                                          SizedBox(height:8),
+                                          const SizedBox(height: 8),
                                           waterLabel('2pm-4pm', '700ml'),
-                                          SizedBox(height:9),
+                                          const SizedBox(height: 9),
                                           waterLabel('4pm-now', '900ml')
                                         ],
                                       )
-                                      ]
-                                    )
-                                  ]
-                                )
-                              ],
-                            )
+                                    ],
+                                  )
+                                ],
+                              )
                             ],
                           ),
                         ),
@@ -527,9 +499,61 @@ class _MyHomePageState extends State<MyHomePage> {
                             Expanded(
                               flex: 4,
                               child: Container(
+                                width: double.infinity,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(20),
                                   color: Colors.white,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text("Calories",
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 12, fontWeight: FontWeight.w500)),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        "760 kCal",
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w600,
+                                          foreground: Paint()
+                                            ..shader = const LinearGradient(
+                                              colors: [
+                                                Color(0xFFD4DBFF),
+                                                Color(0xFF8C9BFF),
+                                              ],
+                                              begin: Alignment.topLeft,
+                                              end: Alignment.bottomRight,
+                                            ).createShader(Rect.fromLTWH(0, 0, 200, 70)),
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Expanded(
+                                        child: Center(
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 100,
+                                            child: CustomPaint(
+                                              painter: _CircularProgressPainter(0.7),
+                                              child: Center(
+                                                child: Text(
+                                                  "230kCal \nleft",
+                                                  style: GoogleFonts.poppins(
+                                                    fontSize: 8,
+                                                    fontWeight: FontWeight.w600,
+                                                    color: Colors.white,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
@@ -547,3 +571,64 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+class _CircularProgressPainter extends CustomPainter {
+  final double progress;
+
+  _CircularProgressPainter(this.progress);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    double strokeWidth = 8;
+    double radius = (size.width / 2 - strokeWidth / 2) * 0.8; // smaller circle
+    Offset center = Offset(size.width / 2, size.height / 2);
+
+    // Draw center gradient
+// Draw center gradient (left to right)
+    Rect centerRect = Rect.fromCircle(center: center, radius: radius);
+    Paint centerPaint = Paint()
+      ..shader = const LinearGradient(
+        colors: [
+          Color(0xFF9AC3FE), // soft blue-lavender (left)
+          Color(0xFF92A5FD), // deeper lavender (right)
+        ],
+        begin: Alignment.centerLeft,
+        end: Alignment.centerRight,
+      ).createShader(centerRect);
+
+    canvas.drawCircle(center, radius * 0.75, centerPaint); // inner gradient circle
+ // inner gradient circle
+
+    // Draw background circle
+    Paint backgroundPaint = Paint()
+      ..color = Colors.grey[200]!
+      ..strokeWidth = strokeWidth
+      ..style = PaintingStyle.stroke;
+    canvas.drawCircle(center, radius, backgroundPaint);
+
+    // Draw progress circle
+    Rect rect = Rect.fromCircle(center: center, radius: radius);
+    Paint progressPaint = Paint()
+      ..shader = const SweepGradient(
+        startAngle: -pi / 2,
+        endAngle: 3 * pi / 2,
+        colors: [
+          Color(0xFFBAA7F8), // pinkish-purple start
+          Color(0xFFB3B9FC), // middle
+          Color(0xFFAEBCFD), // end
+        ],
+      ).createShader(rect)
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth;
+
+
+    double sweepAngle = 2 * pi * progress;
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
+        sweepAngle, false, progressPaint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
